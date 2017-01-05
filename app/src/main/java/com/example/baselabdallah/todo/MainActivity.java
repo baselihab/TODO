@@ -27,27 +27,62 @@ public class MainActivity extends AppCompatActivity {
      * The title of the todo object
      */
     private EditText mEdit;
+    /**
+     * Setup database connection
+     */
+    private DatabaseReference mDatabase;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         listView = (ListView) findViewById(R.id.listview);
         plus = (ImageView) findViewById(R.id.imageView1);
         mEdit = (EditText) findViewById(R.id.editText1);
-        final ListViewItem[] items = new ListViewItem[1];
+        mEdit.requestFocus();
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        //Initialize array with dummy counter
+        final ListViewItem[] items = new ListViewItem[20];
+
+        //Fill the list with dummy data
+        for (int i=0; i<items.length;i++){
+            items[i] = new ListViewItem("ff");
+        }
+
+
+        // addValueEventListner that update the list with new values
+
+        mDatabase.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                int childcount=0;
+                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
+                    // TODO: handle the post
+                    items[childcount]=new ListViewItem(postSnapshot.getKey().toString());
+                    childcount++;
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+                Log.w("loadPost:onCancelled", databaseError.toException());
+                // ...
+            }
+        });
+
+        //Listener on the plus image to add new item (initially not checked)
         plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // Write a message to the database
-                FirebaseDatabase database = FirebaseDatabase.getInstance();
-                DatabaseReference myRef = database.getReference(mEdit.getText().toString());
-                myRef.setValue(false);
+                mDatabase.child(mEdit.getText().toString()).setValue("!check");
                 mEdit.setText("");
             }
         });
-        for (int i=0; i<items.length;i++){
-            items[i] = new ListViewItem("ff");
-        }
+
 
         //Binding the array with the list view through the custom adapter
         CustomAdapter customAdapter = new CustomAdapter(this, R.id.text, items);
