@@ -31,6 +31,10 @@ public class MainActivity extends AppCompatActivity {
      * Setup database connection
      */
     private DatabaseReference mDatabase;
+    /**
+     * List of items shown in the list
+     */
+    private ListViewItem[] items= new ListViewItem[0];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,33 +47,30 @@ public class MainActivity extends AppCompatActivity {
         mEdit.requestFocus();
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
-        //Initialize array with dummy counter
-        final ListViewItem[] items = new ListViewItem[20];
-
-        //Fill the list with dummy data
-        for (int i=0; i<items.length;i++){
-            items[i] = new ListViewItem("ff");
-        }
-
-
         // addValueEventListner that update the list with new values
-
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                //Get the size of snapshot
+                int size = (int) dataSnapshot.getChildrenCount();
+
+                //Initialize array with number of children
+                items = new ListViewItem[size];
+
+                //Fill the list
                 int childcount=0;
                 for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
                     // TODO: handle the post
-                    items[childcount]=new ListViewItem(postSnapshot.getKey().toString());
+                    items[childcount]=new ListViewItem(postSnapshot.getKey());
                     childcount++;
                 }
+                createList(items);
             }
 
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Getting Post failed, log a message
                 Log.w("loadPost:onCancelled", databaseError.toException());
-                // ...
             }
         });
 
@@ -77,16 +78,24 @@ public class MainActivity extends AppCompatActivity {
         plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Write a message to the database
-                mDatabase.child(mEdit.getText().toString()).setValue("!check");
-                mEdit.setText("");
+                if (!mEdit.getText().toString().equals("")){
+                    // Write a message to the database
+                    mDatabase.child(mEdit.getText().toString()).setValue("!check");
+                    mEdit.setText("");
+                }
             }
         });
 
+    }
 
-        //Binding the array with the list view through the custom adapter
-        CustomAdapter customAdapter = new CustomAdapter(this, R.id.text, items);
+    /**
+     *
+     * @param n binding the array with the list view through the custom adapter
+     */
+
+    public void createList (ListViewItem[] n){
+        CustomAdapter customAdapter = new CustomAdapter(this, R.id.text, n);
         listView.setAdapter(customAdapter);
-
     }
 }
+
