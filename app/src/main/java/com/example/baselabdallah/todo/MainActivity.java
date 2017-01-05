@@ -88,13 +88,14 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        //Listener to delete items from list
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
+        //Listener to delete items from list on long click
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            public boolean onItemLongClick(AdapterView<?> parent, View view,
+                                           int position, long id) {
 
                 String key= items[position].getText().toString();
                 mDatabase.child(key).removeValue();
+                return false;
             }
         });
 

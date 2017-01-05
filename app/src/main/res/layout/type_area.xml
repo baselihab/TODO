@@ -10,7 +10,6 @@
     android:textColorHint="#FFFFFF"
     android:textColor="#FFFFFF"
     android:hint="TYPE TODO.."/>
-
     <ImageView
         android:id="@+id/imageView1"
         android:padding="10dp"
