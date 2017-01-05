@@ -4,9 +4,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -80,9 +83,18 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 if (!mEdit.getText().toString().equals("")){
                     // Write a message to the database
-                    mDatabase.child(mEdit.getText().toString()).setValue("!check");
+                    mDatabase.child(mEdit.getText().toString()).setValue("!");
                     mEdit.setText("");
                 }
+            }
+        });
+        //Listener to delete items from list
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view,
+                                    int position, long id) {
+
+                String key= items[position].getText().toString();
+                mDatabase.child(key).removeValue();
             }
         });
 
