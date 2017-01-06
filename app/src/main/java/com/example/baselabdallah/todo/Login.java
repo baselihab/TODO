@@ -4,11 +4,9 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -60,7 +58,7 @@ public class Login extends AppCompatActivity {
                 if (user != null) {
                     // User is signed in, direct to the main activity
                     System.out.println("onAuthStateChanged:signed_in:" + user.getUid());
-                    startActivity(new Intent(Login.this, MainActivity.class));
+                    startActivity(new Intent(Login.this, TODOMain.class));
                 } else {
                     // User is signed out
                     System.out.println("onAuthStateChanged:signed_out");

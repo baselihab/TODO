@@ -10,13 +10,14 @@
     android:textColorHint="#FFFFFF"
     android:textColor="#FFFFFF"
     android:hint="TYPE TODO.."/>
+
     <ImageView
+        android:layout_width="30dp"
+        android:layout_height="30dp"
         android:id="@+id/imageView1"
-        android:padding="10dp"
-        android:layout_width="50dp"
-        android:layout_height="48dp"
-        android:layout_alignTop="@+id/editText1"
-        android:layout_alignBottom="@+id/editText1"
+        android:background="@mipmap/plus"
+        android:layout_marginTop="10dp"
         android:layout_alignParentRight="true"
-        android:src="@drawable/plus" />
+        android:layout_marginRight="5dp"
+    />
 </RelativeLayout>
