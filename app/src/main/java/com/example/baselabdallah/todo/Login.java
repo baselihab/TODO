@@ -58,8 +58,9 @@ public class Login extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    // User is signed in
+                    // User is signed in, direct to the main activity
                     System.out.println("onAuthStateChanged:signed_in:" + user.getUid());
+                    startActivity(new Intent(Login.this, MainActivity.class));
                 } else {
                     // User is signed out
                     System.out.println("onAuthStateChanged:signed_out");
@@ -78,10 +79,7 @@ public class Login extends AppCompatActivity {
         register.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
-                if(register(email.getText().toString(), password.getText().toString())){
-                    Toast.makeText(Login.this, "Authentication Successful. Please sign-in",
-                            Toast.LENGTH_SHORT).show();
-                }
+                register(email.getText().toString(), password.getText().toString());
             }
         });
     }
@@ -104,11 +102,8 @@ public class Login extends AppCompatActivity {
      * Handle signing in process
      * @param email String email
      * @param password String password
-     * @return      Sigin in is successful or not
      */
-    public boolean signin (String email, String password){
-        System.out.println(email+password);
-        final boolean[] flag = {true};
+    public void signin (String email, String password){
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -123,24 +118,19 @@ public class Login extends AppCompatActivity {
                             //Log.w(TAG, "signInWithEmail", task.getException());
                             Toast.makeText(Login.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            flag[0] =false;
                         }
 
                         // ...
                     }
                 });
-        return flag[0];
     }
 
     /**
      * Handle regesteration process
      * @param email String email
      * @param password String password
-     * @return      Regesteration is successful or not
      */
-    public boolean register (String email, String password){
-        System.out.println(email+password);
-        final boolean[] flag = {true};
+    public void register (String email, String password){
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -152,13 +142,11 @@ public class Login extends AppCompatActivity {
                         if (!task.isSuccessful()) {
                             Toast.makeText(Login.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
-                            flag[0] =false;
                         }
 
                         // ...
                     }
                 });
-        return flag[0];
     }
 
 }
