@@ -53,7 +53,7 @@
         android:id="@+id/sign_in"
         android:layout_marginTop="10dp"
         android:layout_gravity="center"
-        android:background="#FFFFFF"/>
+        android:background="@drawable/button_back"/>
 
     <TextView
         android:text="OR"
@@ -71,5 +71,5 @@
         android:layout_marginTop="10dp"
         android:id="@+id/register"
         android:layout_gravity="center"
-        android:background="#FFFFFF"/>
+        android:background="@drawable/button_back"/>
 </LinearLayout>

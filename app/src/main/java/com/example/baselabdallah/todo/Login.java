@@ -18,12 +18,31 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class Login extends AppCompatActivity {
+    /**
+     * Firebase authentication
+     */
     private FirebaseAuth mAuth;
+    /**
+     * Firebase authentication
+     */
     private FirebaseAuth.AuthStateListener mAuthListener;
+    /**
+     * Edit text for entering email
+     */
     private EditText email;
+    /**
+     * Edit text for entering password
+     */
     private EditText password;
+    /**
+     * Button to start signing in
+     */
     private Button signin;
+    /**
+     * Button to start registeration
+     */
     private Button register;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,6 +52,7 @@ public class Login extends AppCompatActivity {
         signin = (Button) findViewById(R.id.sign_in);
         register = (Button) findViewById(R.id.register);
         mAuth = FirebaseAuth.getInstance();
+        //Listener to check the authentication state (Signed in or Signed out)
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -47,24 +67,31 @@ public class Login extends AppCompatActivity {
                 // ...
             }
         };
+        //Sign in button on click listener
         signin.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
                 signin(email.getText().toString(), password.getText().toString());
             }
         });
+        //Regesteration button on click listener
         register.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
-                register(email.getText().toString(), password.getText().toString());
+                if(register(email.getText().toString(), password.getText().toString())){
+                    Toast.makeText(Login.this, "Authentication Successful. Please sign-in",
+                            Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
+
     @Override
     public void onStart() {
         super.onStart();
         mAuth.addAuthStateListener(mAuthListener);
     }
+
     @Override
     public void onStop() {
         super.onStop();
@@ -72,8 +99,16 @@ public class Login extends AppCompatActivity {
             mAuth.removeAuthStateListener(mAuthListener);
         }
     }
-    public void signin (String email, String password){
+
+    /**
+     * Handle signing in process
+     * @param email String email
+     * @param password String password
+     * @return      Sigin in is successful or not
+     */
+    public boolean signin (String email, String password){
         System.out.println(email+password);
+        final boolean[] flag = {true};
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -88,14 +123,24 @@ public class Login extends AppCompatActivity {
                             //Log.w(TAG, "signInWithEmail", task.getException());
                             Toast.makeText(Login.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                            flag[0] =false;
                         }
 
                         // ...
                     }
                 });
+        return flag[0];
     }
-    public void register (String email, String password){
+
+    /**
+     * Handle regesteration process
+     * @param email String email
+     * @param password String password
+     * @return      Regesteration is successful or not
+     */
+    public boolean register (String email, String password){
         System.out.println(email+password);
+        final boolean[] flag = {true};
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -107,11 +152,13 @@ public class Login extends AppCompatActivity {
                         if (!task.isSuccessful()) {
                             Toast.makeText(Login.this, "Authentication failed.",
                                     Toast.LENGTH_SHORT).show();
+                            flag[0] =false;
                         }
 
                         // ...
                     }
                 });
+        return flag[0];
     }
 
 }
