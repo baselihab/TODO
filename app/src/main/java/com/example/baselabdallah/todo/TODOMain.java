@@ -1,5 +1,6 @@
 package com.example.baselabdallah.todo;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -36,6 +37,10 @@ public class TODOMain extends AppCompatActivity {
      * List of items shown in the list
      */
     private ListViewItem[] items= new ListViewItem[0];
+    /**
+     * The user id of the current authenticated usser
+     */
+    private String uid;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +51,16 @@ public class TODOMain extends AppCompatActivity {
         plus = (ImageView) findViewById(R.id.imageView1);
         mEdit = (EditText) findViewById(R.id.editText1);
         mEdit.requestFocus();
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        // getting the user id from the intent
+        Intent iin= getIntent();
+        Bundle b = iin.getExtras();
+
+        if(b!=null)
+        {
+            uid =(String) b.get("uid");
+        }
+        //Setup database connection
+        mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://todo-49029.firebaseio.com/users/"+uid);
 
         // addValueEventListner that update the list with new values
         mDatabase.addValueEventListener(new ValueEventListener() {
@@ -75,7 +89,7 @@ public class TODOMain extends AppCompatActivity {
             }
         });
 
-        //Listener on the plus image to add new item (initially not checked)
+        //Listener on the plus image to add new item
         plus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -91,7 +105,7 @@ public class TODOMain extends AppCompatActivity {
             public boolean onItemLongClick(AdapterView<?> parent, View view,
                                            int position, long id) {
 
-                String key= items[position].getText().toString();
+                String key= items[position].getText();
                 mDatabase.child(key).removeValue();
                 return false;
             }

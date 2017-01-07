@@ -56,9 +56,12 @@ public class Login extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
-                    // User is signed in, direct to the main activity
+                    // User is signed in, direct to the main activity with an extra
+                    // variable which is the user id
                     System.out.println("onAuthStateChanged:signed_in:" + user.getUid());
-                    startActivity(new Intent(Login.this, TODOMain.class));
+                    Intent next=new Intent(Login.this, TODOMain.class);
+                    next.putExtra("uid", user.getUid());
+                    startActivity(next);
                 } else {
                     // User is signed out
                     System.out.println("onAuthStateChanged:signed_out");
