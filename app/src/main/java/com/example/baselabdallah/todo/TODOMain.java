@@ -20,6 +20,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemLongClick;
+import rx.Observable;
+import rx.Observer;
+import rx.Subscriber;
 
 public class TODOMain extends AppCompatActivity {
     /**
@@ -46,6 +49,14 @@ public class TODOMain extends AppCompatActivity {
      * The user id of the current authenticated usser
      */
     private String uid;
+    /**
+     * Observable that gets the new data
+     */
+    Observable<ListViewItem[]> myObservable;
+    /**
+     * Observer that subscribes to the observale
+     */
+    Observer<ListViewItem[]> myObserver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,20 +80,10 @@ public class TODOMain extends AppCompatActivity {
         mDatabase.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                //Get the size of snapshot
-                int size = (int) dataSnapshot.getChildrenCount();
+                //Handle the subscribtion
+                createObservableAndObserver(dataSnapshot);
+                myObservable.subscribe(myObserver);
 
-                //Initialize array with number of children
-                items = new ListViewItem[size];
-
-                //Fill the list
-                int childcount=0;
-                for (DataSnapshot postSnapshot: dataSnapshot.getChildren()) {
-                    // TODO: handle the post
-                    items[childcount]=new ListViewItem(postSnapshot.getKey());
-                    childcount++;
-                }
-                createList(items);
             }
 
             @Override
@@ -91,6 +92,54 @@ public class TODOMain extends AppCompatActivity {
                 Log.w("loadPost:onCancelled", databaseError.toException());
             }
         });
+    }
+
+    /**
+     * Takes the sanpshot and propagate the list
+     * @param dataSnapshot snapshot of the current data
+     */
+    private void createObservableAndObserver(final DataSnapshot dataSnapshot) {
+        myObservable = Observable.create(
+                new Observable.OnSubscribe<ListViewItem[]>() {
+                    @Override
+                    public void call(Subscriber<? super ListViewItem[]> sub) {
+                        //Get the size of snapshot
+                        int size = (int) dataSnapshot.getChildrenCount();
+
+                        //Initialize array with number of children
+                        items = new ListViewItem[size];
+
+                        //Fill the list
+                        int childcount = 0;
+                        for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                            // TODO: handle the post
+                            items[childcount] = new ListViewItem(postSnapshot.getKey());
+                            childcount++;
+                        }
+                        sub.onNext(items);
+                        sub.onCompleted();
+                    }
+                }
+        );
+
+        myObserver = new Observer<ListViewItem[]>() {
+
+            @Override
+            public void onCompleted() {
+
+            }
+
+            @Override
+            public void onError(Throwable e) {
+
+            }
+
+            @Override
+            public void onNext(ListViewItem[] items) {
+                createList(items);
+            }
+        };
+
     }
 
     //Listener on the plus image to add new item
