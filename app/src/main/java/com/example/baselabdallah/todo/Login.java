@@ -15,6 +15,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 public class Login extends AppCompatActivity {
     /**
      * Firebase authentication
@@ -27,28 +31,25 @@ public class Login extends AppCompatActivity {
     /**
      * Edit text for entering email
      */
-    private EditText email;
+    @BindView(R.id.email) EditText email;
     /**
      * Edit text for entering password
      */
-    private EditText password;
+    @BindView(R.id.password) EditText password;
     /**
      * Button to start signing in
      */
-    private Button signin;
+    @BindView(R.id.sign_in) Button signin;
     /**
      * Button to start registeration
      */
-    private Button register;
+    @BindView(R.id.register) Button register;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        email=(EditText) findViewById(R.id.email);
-        password=(EditText) findViewById(R.id.password);
-        signin = (Button) findViewById(R.id.sign_in);
-        register = (Button) findViewById(R.id.register);
+        ButterKnife.bind(this);
         mAuth = FirebaseAuth.getInstance();
         //Listener to check the authentication state (Signed in or Signed out)
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -69,20 +70,22 @@ public class Login extends AppCompatActivity {
                 // ...
             }
         };
-        //Sign in button on click listener
-        signin.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Perform action on click
-                signin(email.getText().toString(), password.getText().toString());
-            }
-        });
-        //Regesteration button on click listener
-        register.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Perform action on click
-                register(email.getText().toString(), password.getText().toString());
-            }
-        });
+    }
+
+    //Sign in button on click listener
+    @OnClick(R.id.sign_in)
+    public void signIn(View view) {
+        // TODO submit data to server...
+        // Perform action on click
+        signin(email.getText().toString(), password.getText().toString());
+    }
+
+    //Regesteration button on click listener
+    @OnClick(R.id.register)
+    public void register(View view) {
+        // TODO submit data to server...
+        // Perform action on click
+        register(email.getText().toString(), password.getText().toString());
     }
 
     @Override
@@ -111,7 +114,6 @@ public class Login extends AppCompatActivity {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         System.out.println( "signInWithEmail:onComplete:" + task.isSuccessful());
 
-
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.
@@ -137,6 +139,7 @@ public class Login extends AppCompatActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         System.out.println("createUserWithEmail:onComplete:" + task.isSuccessful());
+
                         // If sign in fails, display a message to the user. If sign in succeeds
                         // the auth state listener will be notified and logic to handle the
                         // signed in user can be handled in the listener.

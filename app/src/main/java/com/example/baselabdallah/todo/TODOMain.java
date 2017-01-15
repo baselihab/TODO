@@ -16,19 +16,24 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnItemLongClick;
+
 public class TODOMain extends AppCompatActivity {
     /**
      * Varaible representing the list view filled with todo objects
      */
-    private ListView listView;
+    @BindView(R.id.listview) ListView listView;
     /**
      * The add todo button
      */
-    private ImageView plus;
+    @BindView(R.id.imageView1) ImageView plus;
     /**
      * The title of the todo object
      */
-    private EditText mEdit;
+    @BindView(R.id.editText1) EditText mEdit;
     /**
      * Setup database connection
      */
@@ -47,9 +52,7 @@ public class TODOMain extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_todo);
-        listView = (ListView) findViewById(R.id.listview);
-        plus = (ImageView) findViewById(R.id.imageView1);
-        mEdit = (EditText) findViewById(R.id.editText1);
+        ButterKnife.bind(this);
         mEdit.requestFocus();
         // getting the user id from the intent
         Intent iin= getIntent();
@@ -88,29 +91,25 @@ public class TODOMain extends AppCompatActivity {
                 Log.w("loadPost:onCancelled", databaseError.toException());
             }
         });
+    }
 
-        //Listener on the plus image to add new item
-        plus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!mEdit.getText().toString().equals("")){
-                    // Write a message to the database
-                    mDatabase.child(mEdit.getText().toString()).setValue("!");
-                    mEdit.setText("");
-                }
-            }
-        });
-        //Listener to delete items from list on long click
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            public boolean onItemLongClick(AdapterView<?> parent, View view,
-                                           int position, long id) {
-
-                String key= items[position].getText();
-                mDatabase.child(key).removeValue();
-                return false;
-            }
-        });
-
+    //Listener on the plus image to add new item
+    @OnClick(R.id.imageView1)
+    public void add(View view) {
+        // TODO submit data to server...
+        if (!mEdit.getText().toString().equals("")){
+            // Write a message to the database
+            mDatabase.child(mEdit.getText().toString()).setValue("!");
+            mEdit.setText("");
+        }
+    }
+    //Listener to delete items from list on long click
+    @OnItemLongClick(R.id.listview)
+        public boolean delete(AdapterView<?> parent, View view, int position, long id){
+        // TODO submit data to server...
+        String key= items[position].getText();
+        mDatabase.child(key).removeValue();
+        return false;
     }
 
     /**
